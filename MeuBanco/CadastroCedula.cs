@@ -2,9 +2,12 @@
 
 namespace MeuBanco
 {
-    public class CadastroCedula
+    /// <summary>
+    /// Cédulas as quais o caixa eletrônico está autorizado a trabalhar.
+    /// </summary>
+    public static class CadastroCedula
     {
-        public static List<Cedula> CedulasCadastradas = new List<Cedula>
+        public static readonly List<Cedula> CedulasCadastradas = new List<Cedula>
         {
             new Cedula {Nome = "Cem Reais", Valor = 100},
             new Cedula {Nome = "Cinquneta Reais", Valor = 50},

@@ -4,32 +4,49 @@ using System.Linq;
 
 namespace MeuBanco
 {
+    /// <summary>
+    /// Classe responsável pelo controle de saldo e quantidade de notas.
+    /// </summary>
     public class CaixaEletronico
     {
         private readonly List<Lancamento> _lancamentos = new List<Lancamento>();
         private List<Cedula> Cedulas { get; set; } = new List<Cedula>();
 
-        public IEnumerable<Lancamento> ExibirExtrato()
+        public IEnumerable<Lancamento> ObterLancamentos()
         {
             return _lancamentos;
         }
 
-        public List<Cedula> OberCedulas()
+        public IEnumerable<Cedula> OberCedulas()
         {
             return Cedulas;
         }
 
+        /// <summary>
+        /// Representa o saldo do caixa eletrônico.
+        /// O saldo e calculado somando o valor de todas as notas disponíveis.
+        /// </summary>
+        /// <returns></returns>
         public int ObterSaldo()
         {
             return Cedulas.Sum(x => x.Valor);
         }
 
+        /// <summary>
+        /// Efetua um depósito.
+        /// Este classe é utilizada apenas internamente para simular uma carga inicial.
+        /// </summary>
+        /// <param name="valores">Valores a considerar na carga inicial</param>
         public void Depositar(IEnumerable<int> valores)
         {
             var lista = valores.Select(valor => CadastroCedula.CedulasCadastradas.Single(x => x.Valor == valor)).ToList();
             Depositar(lista);
         }
 
+        /// <summary>
+        /// Efetua um depósito.
+        /// </summary>
+        /// <param name="cedulas">Cedulas utilizadas para o depósito</param>
         public void Depositar(List<Cedula> cedulas)
         {
             var valor = 0;

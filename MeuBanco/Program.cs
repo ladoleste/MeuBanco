@@ -164,7 +164,7 @@ namespace MeuBanco
             Console.WriteLine("\n*** Últimos Lançamentos ***\n");
             Console.WriteLine("Tipo  Data       Hora  Valor");
 
-            foreach (var lancamento in caixa.ExibirExtrato())
+            foreach (var lancamento in caixa.ObterLancamentos())
                 Console.WriteLine(
                     string.Format("{0}     {1} {2}  {3:C2}",
                         lancamento.Valor > 0 ? "C" : "D",
