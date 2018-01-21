@@ -55,7 +55,8 @@ namespace MeuBanco
         }
 
         /// <summary>
-        /// Realiza o saque considerando as notas disponíveis.
+        /// Realiza o saque considerando as notas disponíveis.1
+        /// 
         /// </summary>
         /// <param name="caixa">O caixa eletrônico que processará o saque</param>
         private static void RealizaSaque(CaixaEletronico caixa)
