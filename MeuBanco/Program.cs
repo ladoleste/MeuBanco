@@ -54,6 +54,10 @@ namespace MeuBanco
             }
         }
 
+        /// <summary>
+        /// Realiza o saque considerando as notas disponíveis.
+        /// </summary>
+        /// <param name="caixa">O caixa eletrônico que processará o saque</param>
         private static void RealizaSaque(CaixaEletronico caixa)
         {
             if (caixa.ObterSaldo() == 0)
@@ -93,6 +97,11 @@ namespace MeuBanco
             }
         }
 
+        /// <summary>
+        /// Realiza um depósito considerando as notas informadas.
+        /// Deve-se informar primeiro o tipo de nota e na sequencia a quantidade de notas desse tipo.
+        /// </summary>
+        /// <param name="caixa">O caixa eletrônico que processará o depósito</param>
         private static void RealizaDeposito(CaixaEletronico caixa)
         {
             Console.WriteLine("\nTipos de notas aceitas:\n");
@@ -129,6 +138,10 @@ namespace MeuBanco
             Console.WriteLine("Depósito realizado com sucesso!");
         }
 
+        /// <summary>
+        /// Exibe um relatório de notas disponíveis e o saldo atual.
+        /// </summary>
+        /// <param name="caixa">O caixa que processará a informação</param>
         private static void ExibirSaldo(CaixaEletronico caixa)
         {
             Console.WriteLine("\n*** Cédulas disponíveis ***\n");
@@ -143,6 +156,10 @@ namespace MeuBanco
             Console.WriteLine(string.Format("\nValor total: {0:C2}", caixa.ObterSaldo()));
         }
 
+        /// <summary>
+        /// Exibe o histórico de lançamentos com data e hora.
+        /// </summary>
+        /// <param name="caixa">O caixa que processará a informação</param>
         private static void ExibirExtrato(CaixaEletronico caixa)
         {
             Console.WriteLine("\n*** Últimos Lançamentos ***\n");
@@ -157,12 +174,18 @@ namespace MeuBanco
                         lancamento.Valor));
         }
 
+        /// <summary>
+        /// Exibe uma mensagem padrão para o fim de um ação.
+        /// </summary>
         private static void Fim()
         {
             Console.WriteLine("\nPressione qualquer tecla para continuar...\n");
             Console.ReadKey(true);
         }
 
+        /// <summary>
+        /// Exibe o menu principal do programa.
+        /// </summary>
         private static void MostrarMenu()
         {
             Console.Clear();

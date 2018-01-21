@@ -32,6 +32,12 @@ namespace MeuBanco
             Cedulas.AddRange(cedulas);
         }
 
+        /// <summary>
+        /// Realiza o saque.
+        /// Ao chegar nesse ponto já é sabido que a quantidade de notas vai atender ao pedido do cliente.
+        /// É feita apenas uma ordenação para garantir que as notas mais altas serão utilizadas primeiro.
+        /// </summary>
+        /// <param name="saque">Valor a sacar</param>
         public void Sacar(Saque saque)
         {
             var cedulas = Cedulas.OrderByDescending(x => (int) x).ToList();
