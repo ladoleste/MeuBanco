@@ -24,13 +24,16 @@ namespace MeuBanco
                     case Menu.Extrato:
                         Console.Clear();
                         Console.WriteLine("\n*** Últimos Lançamentos ***\n");
-                        Console.WriteLine("Tipo  Data        Valor");
+                        Console.WriteLine("Tipo  Data       Hora  Valor");
 
                         foreach (var lancamento in caixa.ExibirExtrato())
                         {
                             Console.WriteLine(
-                                string.Format("{2}     {0:d}  {1:C2}", lancamento.DataHora, lancamento.Valor,
-                                    lancamento.Valor > 0 ? "C" : "D"));
+                                string.Format("{0}     {1} {2}  {3:C2}",
+                                    lancamento.Valor > 0 ? "C" : "D",
+                                    lancamento.DataHora.ToShortDateString(),
+                                    lancamento.DataHora.ToShortTimeString(),
+                                    lancamento.Valor));
                         }
 
                         Fim();
