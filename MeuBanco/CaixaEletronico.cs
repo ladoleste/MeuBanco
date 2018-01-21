@@ -4,30 +4,6 @@ using System.Linq;
 
 namespace MeuBanco
 {
-    public abstract class Lancamento
-    {
-        public DateTime DataHora { get; protected set; }
-        public decimal Valor { get; protected set; }
-    }
-
-    public class Saque : Lancamento
-    {
-        public Saque(decimal saque)
-        {
-            DataHora = DateTime.Now;
-            Valor = saque * -1;
-        }
-    }
-
-    public class Deposito : Lancamento
-    {
-        public Deposito(decimal dep)
-        {
-            DataHora = DateTime.Now;
-            Valor = dep;
-        }
-    }
-
     public class CaixaEletronico
     {
         private readonly List<Lancamento> _lancamentos = new List<Lancamento>();
@@ -43,7 +19,7 @@ namespace MeuBanco
             return Cedulas;
         }
 
-        public int ExibirSaldo()
+        public int ObterSaldo()
         {
             return Cedulas.Sum(x => (int) x);
         }
@@ -58,20 +34,20 @@ namespace MeuBanco
 
         public void Sacar(Saque saque)
         {
-            var lista = Cedulas.OrderByDescending(x => (int) x).ToList();
-            var lista2 = new List<Cedula>(lista);
+            var cedulas = Cedulas.OrderByDescending(x => (int) x).ToList();
+            var copiaCedulas = new List<Cedula>(cedulas);
             var valorSaque = Math.Abs(saque.Valor);
-            foreach (var cedula in lista2)
+            foreach (var cedula in copiaCedulas)
             {
                 if((int)cedula > valorSaque)
                     continue;
-                lista.Remove(cedula);
+                cedulas.Remove(cedula);
                 valorSaque -= (int) cedula;
                 if(valorSaque == 0)
                     break;
             }
 
-            Cedulas = lista;
+            Cedulas = cedulas;
             _lancamentos.Add(saque);
         }
     }

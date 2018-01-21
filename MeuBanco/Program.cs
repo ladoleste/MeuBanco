@@ -6,13 +6,12 @@ namespace MeuBanco
 {
     internal static class Program
     {
-        // ReSharper disable once UnusedParameter.Local
         private static void Main(string[] args)
         {
             var caixa = new CaixaEletronico();
 
-            var c = new List<Cedula> {Cedula.Cem, Cedula.Cem, Cedula.Cinquenta, Cedula.Cinquenta, Cedula.Vinte, Cedula.Vinte, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco};
-            caixa.Depositar(c);
+//            var c = new List<Cedula> {Cedula.Cem, Cedula.Cem, Cedula.Cinquenta, Cedula.Cinquenta, Cedula.Vinte, Cedula.Vinte, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco};
+//            caixa.Depositar(c);
 
             while (true)
             {
@@ -57,6 +56,12 @@ namespace MeuBanco
 
         private static void RealizaSaque(CaixaEletronico caixa)
         {
+            if (caixa.ObterSaldo() == 0)
+            {
+                Console.Write("\nSaque indisponível");
+                return;
+            }
+
             while (true)
             {
                 var valorSaque = 0;
@@ -68,14 +73,13 @@ namespace MeuBanco
                     if (valorSaque <= 0) Console.WriteLine("Valor inválido");
                 }
 
-                if (valorSaque > caixa.ExibirSaldo())
-                    Console.WriteLine(string.Format("Valor indisponível\nEste equipamento só dispõe de {0:C2}", caixa.ExibirSaldo()));
+                if (valorSaque > caixa.ObterSaldo())
+                    Console.WriteLine(string.Format("Valor indisponível\nEste equipamento só dispõe de {0:C2}",
+                        caixa.ObterSaldo()));
                 else
                 {
-                    var lista = caixa.OberCedulas().OrderBy(x => (int) x);
-
-                    var menorCedula = lista.First();
-                    if (valorSaque % (int) menorCedula > 0)
+                    var menorCedula = caixa.OberCedulas().Min(x => (int) x);
+                    if (valorSaque % menorCedula > 0)
                     {
                         Console.WriteLine("O valor precisa ser multiplo de " + menorCedula);
                         continue;
@@ -95,9 +99,6 @@ namespace MeuBanco
 
             foreach (var menu in Enum.GetValues(typeof(Cedula)))
                 Console.WriteLine(string.Format("{0} -> {1}", (int) menu, menu.ToString()));
-
-            Console.Write("\nInforme tipo de nota: ");
-            //Enum.TryParse(Console.ReadLine(), true, out Cedula cedula);
 
             var isDefined = false;
             Cedula cedula = 0;
@@ -130,11 +131,16 @@ namespace MeuBanco
 
         private static void ExibirSaldo(CaixaEletronico caixa)
         {
-            foreach (Cedula cedula in Enum.GetValues(typeof(Cedula)))
-                Console.WriteLine(string.Format("{0} notas de {1}", caixa.OberCedulas().Count(x => x == cedula),
-                    cedula.ToString()));
+            Console.WriteLine("\n*** Cédulas disponíveis ***\n");
 
-            Console.WriteLine(string.Format("\nValor total: {0:C2}", caixa.ExibirSaldo()));
+            foreach (Cedula cedula in Enum.GetValues(typeof(Cedula)))
+            {
+                var count = caixa.OberCedulas().Count(x => x == cedula);
+                if (count > 0)
+                    Console.WriteLine(string.Format("{0} nota(s) de {1}", count, cedula.ToString()));
+            }
+
+            Console.WriteLine(string.Format("\nValor total: {0:C2}", caixa.ObterSaldo()));
         }
 
         private static void ExibirExtrato(CaixaEletronico caixa)
