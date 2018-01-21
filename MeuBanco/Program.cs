@@ -9,9 +9,9 @@ namespace MeuBanco
         private static void Main(string[] args)
         {
             var caixa = new CaixaEletronico();
-
-//            var c = new List<Cedula> {Cedula.Cem, Cedula.Cem, Cedula.Cinquenta, Cedula.Cinquenta, Cedula.Vinte, Cedula.Vinte, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco};
-//            caixa.Depositar(c);
+            
+            //Carga inicial
+            caixa.Depositar(new[] {100, 50, 50, 20, 20, 20, 10, 10, 10, 10, 5, 5, 5, 5, 5});
 
             while (true)
             {
@@ -82,7 +82,7 @@ namespace MeuBanco
                         caixa.ObterSaldo()));
                 else
                 {
-                    var menorCedula = caixa.OberCedulas().Min(x => (int) x);
+                    var menorCedula = caixa.OberCedulas().Min(x => x.Valor);
                     if (valorSaque % menorCedula > 0)
                     {
                         Console.WriteLine("O valor precisa ser multiplo de " + menorCedula);
@@ -106,17 +106,16 @@ namespace MeuBanco
         {
             Console.WriteLine("\nTipos de notas aceitas:\n");
 
-            foreach (var menu in Enum.GetValues(typeof(Cedula)))
-                Console.WriteLine(string.Format("{0} -> {1}", (int) menu, menu.ToString()));
+            foreach (var tipoCedula in CadastroCedula.CedulasCadastradas)
+                Console.WriteLine(string.Format("{1} ({0})", tipoCedula.Nome, tipoCedula.Valor));
 
-            var isDefined = false;
-            Cedula cedula = 0;
-            while (!isDefined)
+            Cedula cedula = null;
+            while (cedula == null)
             {
-                Console.Write("\nInforme o tipo de nota: ");
-                Enum.TryParse(Console.ReadLine(), true, out cedula);
-                isDefined = Enum.IsDefined(typeof(Cedula), cedula);
-                if (!isDefined)
+                Console.Write("\nInforme o valor da nota: ");
+                var valor = Console.ReadLine().ToInt();
+                cedula = CadastroCedula.CedulasCadastradas.SingleOrDefault(x => x.Valor == valor);
+                if (cedula == null)
                     Console.WriteLine("Tipo não suportado!");
             }
 
@@ -146,11 +145,11 @@ namespace MeuBanco
         {
             Console.WriteLine("\n*** Cédulas disponíveis ***\n");
 
-            foreach (Cedula cedula in Enum.GetValues(typeof(Cedula)))
+            foreach (var cedula in CadastroCedula.CedulasCadastradas)
             {
                 var count = caixa.OberCedulas().Count(x => x == cedula);
                 if (count > 0)
-                    Console.WriteLine(string.Format("{0} nota(s) de {1}", count, cedula.ToString()));
+                    Console.WriteLine(string.Format("{0} nota(s) de {1}", count, cedula.Nome));
             }
 
             Console.WriteLine(string.Format("\nValor total: {0:C2}", caixa.ObterSaldo()));

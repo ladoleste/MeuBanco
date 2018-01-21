@@ -1,11 +1,8 @@
 ﻿namespace MeuBanco
 {
-    public enum Cedula
+    public class Cedula
     {
-        Cinco = 5,
-        Dez = 10,
-        Vinte = 20,
-        Cinquenta = 50,
-        Cem = 100
+        public string Nome { get; set; }
+        public int Valor { get; set; }
     }
 }

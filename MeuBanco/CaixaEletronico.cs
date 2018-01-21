@@ -8,7 +8,7 @@ namespace MeuBanco
     {
         private readonly List<Lancamento> _lancamentos = new List<Lancamento>();
         private List<Cedula> Cedulas { get; set; } = new List<Cedula>();
-        
+
         public IEnumerable<Lancamento> ExibirExtrato()
         {
             return _lancamentos;
@@ -21,13 +21,19 @@ namespace MeuBanco
 
         public int ObterSaldo()
         {
-            return Cedulas.Sum(x => (int) x);
+            return Cedulas.Sum(x => x.Valor);
+        }
+
+        public void Depositar(IEnumerable<int> valores)
+        {
+            var lista = valores.Select(valor => CadastroCedula.CedulasCadastradas.Single(x => x.Valor == valor)).ToList();
+            Depositar(lista);
         }
 
         public void Depositar(List<Cedula> cedulas)
         {
             var valor = 0;
-            cedulas.ForEach(x => valor += (int)x);
+            cedulas.ForEach(x => valor += x.Valor);
             _lancamentos.Add(new Deposito(valor));
             Cedulas.AddRange(cedulas);
         }
@@ -40,17 +46,17 @@ namespace MeuBanco
         /// <param name="saque">Valor a sacar</param>
         public void Sacar(Saque saque)
         {
-            var cedulas = Cedulas.OrderByDescending(x => (int) x).ToList();
+            var cedulas = Cedulas.OrderByDescending(x => x.Valor).ToList();
             var copiaCedulas = new List<Cedula>(cedulas);
             var valorSaque = Math.Abs(saque.Valor);
-            
+
             foreach (var cedula in copiaCedulas)
             {
-                if((int)cedula > valorSaque)
+                if (cedula.Valor > valorSaque)
                     continue;
                 cedulas.Remove(cedula);
-                valorSaque -= (int) cedula;
-                if(valorSaque == 0)
+                valorSaque -= cedula.Valor;
+                if (valorSaque == 0)
                     break;
             }
 
