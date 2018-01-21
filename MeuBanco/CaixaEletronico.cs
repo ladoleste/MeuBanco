@@ -43,6 +43,7 @@ namespace MeuBanco
             var cedulas = Cedulas.OrderByDescending(x => (int) x).ToList();
             var copiaCedulas = new List<Cedula>(cedulas);
             var valorSaque = Math.Abs(saque.Valor);
+            
             foreach (var cedula in copiaCedulas)
             {
                 if((int)cedula > valorSaque)
