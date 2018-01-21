@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace MeuBanco
@@ -12,7 +11,7 @@ namespace MeuBanco
         {
             var caixa = new CaixaEletronico();
 
-            var c = new List<Cedula> {Cedula.Cem, Cedula.Cem, Cedula.Cem, Cedula.Vinte, Cedula.Vinte, Cedula.Cinquenta};
+            var c = new List<Cedula> {Cedula.Cem, Cedula.Cem, Cedula.Cinquenta, Cedula.Cinquenta, Cedula.Vinte, Cedula.Vinte, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco, Cedula.Cinco};
             caixa.Depositar(c);
 
             while (true)

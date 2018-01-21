@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Schema;
 
 namespace MeuBanco
 {
@@ -32,14 +31,14 @@ namespace MeuBanco
     public class CaixaEletronico
     {
         private readonly List<Lancamento> _lancamentos = new List<Lancamento>();
-        private List<Cedula> Cedulas { get; } = new List<Cedula>();
+        private List<Cedula> Cedulas { get; set; } = new List<Cedula>();
         
         public IEnumerable<Lancamento> ExibirExtrato()
         {
             return _lancamentos;
         }
 
-        public IEnumerable<Cedula> OberCedulas()
+        public List<Cedula> OberCedulas()
         {
             return Cedulas;
         }
@@ -59,7 +58,21 @@ namespace MeuBanco
 
         public void Sacar(Saque saque)
         {
-           
+            var lista = Cedulas.OrderByDescending(x => (int) x).ToList();
+            var lista2 = new List<Cedula>(lista);
+            var valorSaque = Math.Abs(saque.Valor);
+            foreach (var cedula in lista2)
+            {
+                if((int)cedula > valorSaque)
+                    continue;
+                lista.Remove(cedula);
+                valorSaque -= (int) cedula;
+                if(valorSaque == 0)
+                    break;
+            }
+
+            Cedulas = lista;
+            _lancamentos.Add(saque);
         }
     }
 }
