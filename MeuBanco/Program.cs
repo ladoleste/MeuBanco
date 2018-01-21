@@ -19,7 +19,7 @@ namespace MeuBanco
             {
                 MostrarMenu();
 
-                var opcao = Enum.Parse(typeof(Menu), Console.ReadKey().KeyChar.ToString());
+                Enum.TryParse(Console.ReadKey().KeyChar.ToString(), true, out Menu opcao);
 
                 switch (opcao)
                 {
