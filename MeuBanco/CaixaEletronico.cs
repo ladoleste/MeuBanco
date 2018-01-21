@@ -39,7 +39,7 @@ namespace MeuBanco
         /// <param name="valores">Valores a considerar na carga inicial</param>
         public void Depositar(IEnumerable<int> valores)
         {
-            var lista = valores.Select(valor => CadastroCedula.CedulasCadastradas.Single(x => x.Valor == valor)).ToList();
+            var lista = valores.Select(valor => Cedula.CedulasCadastradas.Single(x => x.Valor == valor)).ToList();
             Depositar(lista);
         }
 

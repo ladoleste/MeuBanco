@@ -107,7 +107,7 @@ namespace MeuBanco
         {
             Console.WriteLine("\nTipos de notas aceitas:\n");
 
-            foreach (var tipoCedula in CadastroCedula.CedulasCadastradas)
+            foreach (var tipoCedula in Cedula.CedulasCadastradas)
                 Console.WriteLine(string.Format("{1} ({0})", tipoCedula.Nome, tipoCedula.Valor));
 
             Cedula cedula = null;
@@ -115,7 +115,7 @@ namespace MeuBanco
             {
                 Console.Write("\nInforme o valor da nota: ");
                 var valor = Console.ReadLine().ToInt();
-                cedula = CadastroCedula.CedulasCadastradas.SingleOrDefault(x => x.Valor == valor);
+                cedula = Cedula.CedulasCadastradas.SingleOrDefault(x => x.Valor == valor);
                 if (cedula == null)
                     Console.WriteLine("Tipo não suportado!");
             }
@@ -146,7 +146,7 @@ namespace MeuBanco
         {
             Console.WriteLine("\n*** Cédulas disponíveis ***\n");
 
-            foreach (var cedula in CadastroCedula.CedulasCadastradas)
+            foreach (var cedula in Cedula.CedulasCadastradas)
             {
                 var count = caixa.OberCedulas().Count(x => x == cedula);
                 if (count > 0)
