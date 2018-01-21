@@ -1,17 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace MeuBanco
 {
     internal static class Program
     {
-// ReSharper disable once UnusedParameter.Local
+        // ReSharper disable once UnusedParameter.Local
         private static void Main(string[] args)
         {
             var caixa = new CaixaEletronico();
-            caixa.RealizaDeposito(new Deposito(5));
-            caixa.RealizaDeposito(new Deposito(25));
-            caixa.RealizaDeposito(new Deposito(35));
-            caixa.RealizaSaque(new Saque(100));
+
+            var c = new List<Cedula> {Cedula.Cem, Cedula.Cem, Cedula.Cem, Cedula.Vinte, Cedula.Vinte, Cedula.Cinquenta};
+            caixa.Depositar(c);
 
             while (true)
             {
@@ -23,63 +25,22 @@ namespace MeuBanco
                 {
                     case Menu.Extrato:
                         Console.Clear();
-                        Console.WriteLine("\n*** Últimos Lançamentos ***\n");
-                        Console.WriteLine("Tipo  Data       Hora  Valor");
-
-                        foreach (var lancamento in caixa.ExibirExtrato())
-                        {
-                            Console.WriteLine(
-                                string.Format("{0}     {1} {2}  {3:C2}",
-                                    lancamento.Valor > 0 ? "C" : "D",
-                                    lancamento.DataHora.ToShortDateString(),
-                                    lancamento.DataHora.ToShortTimeString(),
-                                    lancamento.Valor));
-                        }
-
+                        ExibirExtrato(caixa);
                         Fim();
                         break;
                     case Menu.Saldo:
                         Console.Clear();
-                        Console.WriteLine(string.Format("\nSeu saldo atual é de: {0:C2}", caixa.ExibirSaldo()));
+                        ExibirSaldo(caixa);
                         Fim();
                         break;
                     case Menu.Deposito:
                         Console.Clear();
-                        Console.Write("\nInforme o valor a depositar: ");
-                        var valorDeposito = Console.ReadLine().ToDecimal();
-
-                        if (valorDeposito > 0)
-                        {
-                            caixa.RealizaDeposito(new Deposito(valorDeposito));
-                            Console.WriteLine("Depósito realizado com sucesso!");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Valor inválido");
-                        }
-
+                        RealizaDeposito(caixa);
                         Fim();
                         break;
                     case Menu.Saque:
                         Console.Clear();
-                        Console.Write("\nInforme o valor a sacar: ");
-                        var valorSaque = Console.ReadLine().ToDecimal();
-
-                        if (valorSaque > 0)
-                        {
-                            caixa.RealizaSaque(new Saque(valorSaque));
-                            Console.WriteLine("Saque realizado com sucesso!");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Valor inválido");
-                        }
-
-                        Fim();
-                        break;
-                    case Menu.Carregamento:
-                        Console.Clear();
-                        Console.WriteLine("\n\nNão disponível no momento!\n");
+                        RealizaSaque(caixa);
                         Fim();
                         break;
                     case Menu.Sair:
@@ -95,6 +56,102 @@ namespace MeuBanco
             }
         }
 
+        private static void RealizaSaque(CaixaEletronico caixa)
+        {
+            while (true)
+            {
+                var valorSaque = 0;
+                while (valorSaque == 0)
+                {
+                    Console.Write("\nInforme o valor a sacar: ");
+                    valorSaque = Console.ReadLine().ToInt();
+
+                    if (valorSaque <= 0) Console.WriteLine("Valor inválido");
+                }
+
+                if (valorSaque > caixa.ExibirSaldo())
+                    Console.WriteLine(string.Format("Valor indisponível\nEste equipamento só dispõe de {0:C2}", caixa.ExibirSaldo()));
+                else
+                {
+                    var lista = caixa.OberCedulas().OrderBy(x => (int) x);
+
+                    var menorCedula = lista.First();
+                    if (valorSaque % (int) menorCedula > 0)
+                    {
+                        Console.WriteLine("O valor precisa ser multiplo de " + menorCedula);
+                        continue;
+                    }
+
+                    caixa.Sacar(new Saque(valorSaque));
+                    Console.WriteLine("Saque realizado com sucesso!");
+                }
+
+                break;
+            }
+        }
+
+        private static void RealizaDeposito(CaixaEletronico caixa)
+        {
+            Console.WriteLine("\nTipos de notas aceitas:\n");
+
+            foreach (var menu in Enum.GetValues(typeof(Cedula)))
+                Console.WriteLine(string.Format("{0} -> {1}", (int) menu, menu.ToString()));
+
+            Console.Write("\nInforme tipo de nota: ");
+            //Enum.TryParse(Console.ReadLine(), true, out Cedula cedula);
+
+            var isDefined = false;
+            Cedula cedula = 0;
+            while (!isDefined)
+            {
+                Console.Write("\nInforme o tipo de nota: ");
+                Enum.TryParse(Console.ReadLine(), true, out cedula);
+                isDefined = Enum.IsDefined(typeof(Cedula), cedula);
+                if (!isDefined)
+                    Console.WriteLine("Tipo não suportado!");
+            }
+
+            var qtd = 0;
+            while (qtd <= 0)
+            {
+                Console.Write("\nInforme a quantidade de notas a depositar: ");
+                int.TryParse(Console.ReadLine(), out qtd);
+                if (qtd <= 0)
+                    Console.WriteLine("Quantidade inválida!");
+            }
+
+            var cedulas = new List<Cedula>();
+            for (var i = 0; i < qtd; i++)
+                cedulas.Add(cedula);
+
+            caixa.Depositar(cedulas);
+
+            Console.WriteLine("Depósito realizado com sucesso!");
+        }
+
+        private static void ExibirSaldo(CaixaEletronico caixa)
+        {
+            foreach (Cedula cedula in Enum.GetValues(typeof(Cedula)))
+                Console.WriteLine(string.Format("{0} notas de {1}", caixa.OberCedulas().Count(x => x == cedula),
+                    cedula.ToString()));
+
+            Console.WriteLine(string.Format("\nValor total: {0:C2}", caixa.ExibirSaldo()));
+        }
+
+        private static void ExibirExtrato(CaixaEletronico caixa)
+        {
+            Console.WriteLine("\n*** Últimos Lançamentos ***\n");
+            Console.WriteLine("Tipo  Data       Hora  Valor");
+
+            foreach (var lancamento in caixa.ExibirExtrato())
+                Console.WriteLine(
+                    string.Format("{0}     {1} {2}  {3:C2}",
+                        lancamento.Valor > 0 ? "C" : "D",
+                        lancamento.DataHora.ToShortDateString(),
+                        lancamento.DataHora.ToShortTimeString(),
+                        lancamento.Valor));
+        }
+
         private static void Fim()
         {
             Console.WriteLine("\nPressione qualquer tecla para continuar...\n");
@@ -107,10 +164,8 @@ namespace MeuBanco
 
             Console.WriteLine("\n*** MENU PRINCIPAL ***\n");
 
-            foreach (Menu foo in Enum.GetValues(typeof(Menu)))
-            {
-                Console.WriteLine(string.Format("{0}. {1}", (int) foo, foo.ToString()));
-            }
+            foreach (var menu in Enum.GetValues(typeof(Menu)))
+                Console.WriteLine(string.Format("{0}. {1}", (int) menu, menu.ToString()));
 
             Console.Write("\nInforme a opção desejada: ");
         }

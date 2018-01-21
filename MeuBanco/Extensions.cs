@@ -4,15 +4,9 @@ namespace MeuBanco
 {
     public static class CustomExtensions
     {
-        public static decimal ToDecimal(this string str)
+        public static int ToInt(this string str)
         {
-            decimal.TryParse(str, out var x);
-            return x;
-        }
-        
-        public static byte ToByte(this string key)
-        {
-            byte.TryParse(key, out var x);
+            int.TryParse(str, out var x);
             return x;
         }
     }

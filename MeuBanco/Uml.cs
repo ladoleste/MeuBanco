@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Schema;
 
 namespace MeuBanco
 {
     public abstract class Lancamento
     {
-        public DateTime DataHora { get; set; }
-        public decimal Valor { get; set; }
+        public DateTime DataHora { get; protected set; }
+        public decimal Valor { get; protected set; }
     }
 
     public class Saque : Lancamento
@@ -27,42 +29,37 @@ namespace MeuBanco
         }
     }
 
-    public class Cedula
-    {
-        public string Nome { get; set; }
-        public decimal Valor { get; set; }
-    }
-
-    public class SaldoCedula
-    {
-        public int QtdeCedula { get; set; }
-    }
-
     public class CaixaEletronico
     {
-        private decimal _saldo;
         private readonly List<Lancamento> _lancamentos = new List<Lancamento>();
-
+        private List<Cedula> Cedulas { get; } = new List<Cedula>();
+        
         public IEnumerable<Lancamento> ExibirExtrato()
         {
             return _lancamentos;
         }
 
-        public decimal ExibirSaldo()
+        public IEnumerable<Cedula> OberCedulas()
         {
-            return _saldo;
+            return Cedulas;
         }
 
-        public void RealizaDeposito(Deposito deposito)
+        public int ExibirSaldo()
         {
-            _lancamentos.Add(deposito);
-            _saldo += deposito.Valor;
+            return Cedulas.Sum(x => (int) x);
         }
 
-        public void RealizaSaque(Saque saque)
+        public void Depositar(List<Cedula> cedulas)
         {
-            _lancamentos.Add(saque);
-            _saldo += saque.Valor;
+            var valor = 0;
+            cedulas.ForEach(x => valor += (int)x);
+            _lancamentos.Add(new Deposito(valor));
+            Cedulas.AddRange(cedulas);
+        }
+
+        public void Sacar(Saque saque)
+        {
+           
         }
     }
 }
